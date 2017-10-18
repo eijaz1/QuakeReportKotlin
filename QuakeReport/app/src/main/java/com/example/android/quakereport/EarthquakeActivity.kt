@@ -15,21 +15,16 @@
  */
 package com.example.android.quakereport
 
-
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.View
-import android.widget.AdapterView
 import java.util.ArrayList
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class EarthquakeActivity : AppCompatActivity() {
 
+    //initialize @earthquake_list with type recyclerView
+    //iniialize @earthquakes with type ArrayList of Earthquake objects
     lateinit var earthquake_list : RecyclerView
     var earthquakes:ArrayList<Earthquake> = ArrayList()
 
@@ -37,25 +32,14 @@ class EarthquakeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.earthquake_activity)
 
-        fun loadData() {
-//            earthquakes.add(Earthquake("7.2", "San Francisco", "Feb 1, 2016"))
-//            earthquakes.add(Earthquake("6.1", "London", "Feb 2, 2016"))
-//            earthquakes.add(Earthquake("3.9", "Tokyo", "Feb 3, 2016"))
-//            earthquakes.add(Earthquake("5.4", "Mexico City", "Feb 4, 2016"))
-//            earthquakes.add(Earthquake("2.8", "San Francisco2", "Feb 5, 2016"))
-//            earthquakes.add(Earthquake("4.9", "San Francisco3", "Feb 6, 2016"))
-//            earthquakes.add(Earthquake("1.6", "San Francisco4", "Feb 7, 2016"))
+        //list of earthquakes pulled from JSON response
+        earthquakes = QueryUtils.extractEarthquakes()
 
-            earthquakes = QueryUtils.extractEarthquakes()
-        }
-
-        loadData()
-
+        //setting up RecyclerView to recycle earthquake_list_item in
+        // rv_earthquake_list for each earthquake
         earthquake_list = findViewById(R.id.rv_earthquake_list) as RecyclerView
         earthquake_list.layoutManager = LinearLayoutManager(this)
-//        country_list.layoutManager = GridLayoutManager(this,2)
         earthquake_list.adapter = EarthquakeAdapter(earthquakes, this)
-
 
     }
 

@@ -5,11 +5,8 @@ package com.example.android.quakereport
  */
 
 import android.util.Log
-
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-
 import java.util.ArrayList
 
 /**
@@ -43,12 +40,13 @@ object QueryUtils {
         // Catch the exception so the app doesn't crash, and print the error message to the logs.
         try {
 
-            // TODO: Parse the response given by the SAMPLE_JSON_RESPONSE string and
+            // Parse the response given by the SAMPLE_JSON_RESPONSE string and
             // build up a list of Earthquake objects with the corresponding data.
 
             val baseJsonResponse = JSONObject(SAMPLE_JSON_RESPONSE)
             val earthquakeArray = baseJsonResponse.getJSONArray("features")
 
+            //loop through each earthquake in the JSON response and pull out its attributes
             var i = 0
             for (i in i..earthquakeArray.length()) {
                 val currentEarthquake = earthquakeArray.getJSONObject(i)
@@ -58,6 +56,8 @@ object QueryUtils {
                 val time = properties.getLong("time")
                 val url = properties.getString("url")
 
+                //create a new earthquake instance and add it to the
+                // earthquakes Array List for each earthquake
                 val earthquake = Earthquake(magnitude, location, time, url)
                 earthquakes.add(earthquake)
             }
