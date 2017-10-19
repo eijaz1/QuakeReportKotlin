@@ -21,6 +21,10 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
+import android.view.View
+import android.widget.TextView
+import kotlinx.android.synthetic.main.earthquake_activity.*
 import java.util.ArrayList
 
 class EarthquakeActivity : AppCompatActivity(), LoaderCallbacks<ArrayList<Earthquake>> {
@@ -32,10 +36,16 @@ class EarthquakeActivity : AppCompatActivity(), LoaderCallbacks<ArrayList<Earthq
     val EARTHQUAKE_LOADER_ID: Int = 1
     val USGS_REQUEST_URL: String = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmag=3&limit=20"
 
+    /** Tag for the log messages  */
+    val LOG_TAG = EarthquakeActivity::class.java!!.getSimpleName()
+
     //initialize @earthquake_list with type recyclerView
     //iniialize @earthquakes with type ArrayList of Earthquake objects
     lateinit var earthquake_list: RecyclerView
     var earthquakes:ArrayList<Earthquake> = ArrayList()
+
+    // Initialize empty text view
+    lateinit var tvEmptyView: TextView
 
     override fun onCreateLoader(p0: Int, p1: Bundle?): Loader<ArrayList<Earthquake>> {
 
@@ -52,10 +62,17 @@ class EarthquakeActivity : AppCompatActivity(), LoaderCallbacks<ArrayList<Earthq
             earthquake_list = findViewById(R.id.rv_earthquake_list) as RecyclerView
             earthquake_list.layoutManager = LinearLayoutManager(this@EarthquakeActivity)
             earthquake_list.adapter = EarthquakeAdapter(earthquakes, this@EarthquakeActivity)
+
+        } else {
+            
+            // Set empty state text to display "No earthquakes found."
+            tvEmptyView.text = "No earthquakes found"
+            tvEmptyView.visibility = View.VISIBLE
         }
     }
 
     override fun onLoaderReset(p0: Loader<ArrayList<Earthquake>>?) {
+
         earthquakes.clear()
     }
 
@@ -72,6 +89,9 @@ class EarthquakeActivity : AppCompatActivity(), LoaderCallbacks<ArrayList<Earthq
         earthquake_list = findViewById(R.id.rv_earthquake_list) as RecyclerView
         earthquake_list.layoutManager = LinearLayoutManager(this)
         earthquake_list.adapter = EarthquakeAdapter(earthquakes, this)
+
+        tvEmptyView = tv_empty_view
+
 
     }
 

@@ -107,9 +107,6 @@ object QueryUtils {
     }
 
 
-
-
-
     /**
      * Return a list of [Earthquake] objects that has been built up from
      * parsing a JSON response.
@@ -166,6 +163,7 @@ object QueryUtils {
      * Query the USGS dataset and return a list of [Earthquake] objects.
      */
     fun fetchEarthquakeData(requestUrl: String): ArrayList<Earthquake> {
+
         // Create URL object
         val url = createUrl(requestUrl)
 

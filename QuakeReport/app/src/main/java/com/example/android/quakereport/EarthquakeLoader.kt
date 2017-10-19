@@ -2,6 +2,7 @@ package com.example.android.quakereport
 
 import android.content.AsyncTaskLoader
 import android.content.Context
+import android.util.Log
 import com.example.android.quakereport.QueryUtils.fetchEarthquakeData
 
 /**
@@ -20,6 +21,7 @@ import com.example.android.quakereport.QueryUtils.fetchEarthquakeData
 class EarthquakeLoader(context: Context, val url: String?) : AsyncTaskLoader<ArrayList<Earthquake>>(context) {
 
     override fun onStartLoading() {
+
         forceLoad()
     }
 
@@ -27,6 +29,7 @@ class EarthquakeLoader(context: Context, val url: String?) : AsyncTaskLoader<Arr
      * This is on a background thread.
      */
     override fun loadInBackground(): ArrayList<Earthquake>? {
+
         if (url == null) {
             return null
         }
