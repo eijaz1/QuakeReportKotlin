@@ -17,6 +17,9 @@ package com.example.android.quakereport
 
 import android.content.Loader
 import android.app.LoaderManager.LoaderCallbacks
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -42,7 +45,7 @@ class EarthquakeActivity : AppCompatActivity(), LoaderCallbacks<ArrayList<Earthq
 
     //initialize @earthquake_list with type recyclerView
     //iniialize @earthquakes with type ArrayList of Earthquake objects
-    lateinit var earthquake_list: RecyclerView
+    lateinit var rvEarthquakeList: RecyclerView
     var earthquakes:ArrayList<Earthquake> = ArrayList()
 
     // Initialize empty text view and progress bar
@@ -58,21 +61,22 @@ class EarthquakeActivity : AppCompatActivity(), LoaderCallbacks<ArrayList<Earthq
     override fun onLoadFinished(p0: Loader<ArrayList<Earthquake>>?, earthquakes: ArrayList<Earthquake>?) {
 
         pbLoadingIndicator = pb_loading_indicator
-        pbLoadingIndicator.visibility = View.GONE
+        pbLoadingIndicator!!.visibility = View.GONE
 
         if (earthquakes !=null && !earthquakes.isEmpty()) {
 
             //setting up RecyclerView to recycle earthquake_list_item in
             // rv_earthquake_list for each earthquake
-            earthquake_list = findViewById(R.id.rv_earthquake_list) as RecyclerView
-            earthquake_list.layoutManager = LinearLayoutManager(this@EarthquakeActivity)
-            earthquake_list.adapter = EarthquakeAdapter(earthquakes, this@EarthquakeActivity)
+            rvEarthquakeList = findViewById(R.id.rv_earthquake_list) as RecyclerView
+            rvEarthquakeList.layoutManager = LinearLayoutManager(this@EarthquakeActivity)
+            rvEarthquakeList.adapter = EarthquakeAdapter(earthquakes, this@EarthquakeActivity)
 
         } else {
 
             // Set empty state text to display "No earthquakes found."
-            tvEmptyView.text = "No earthquakes found"
-            tvEmptyView.visibility = View.VISIBLE
+            tvEmptyView = tv_empty_view
+            tvEmptyView!!.text = "No earthquakes found"
+            tvEmptyView!!.visibility = View.VISIBLE
         }
     }
 
@@ -86,18 +90,27 @@ class EarthquakeActivity : AppCompatActivity(), LoaderCallbacks<ArrayList<Earthq
         super.onCreate(savedInstanceState)
         setContentView(R.layout.earthquake_activity)
 
-        // Interact with loader
-        getLoaderManager().initLoader(EARTHQUAKE_LOADER_ID, null, this)
+        // Get a reference to the ConnectivityManager to check state of network connectivity
+        val connMgr: ConnectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        //setting up RecyclerView to recycle earthquake_list_item in
-        // rv_earthquake_list for each earthquake
-        earthquake_list = findViewById(R.id.rv_earthquake_list) as RecyclerView
-        earthquake_list.layoutManager = LinearLayoutManager(this)
-        earthquake_list.adapter = EarthquakeAdapter(earthquakes, this)
+        // Get details on the currently active default data network
+        val networkInfo: NetworkInfo? = connMgr.activeNetworkInfo
 
-        tvEmptyView = tv_empty_view
+        if (networkInfo != null && networkInfo.isConnected()) {
 
+            // Interact with loader
+            getLoaderManager().initLoader(EARTHQUAKE_LOADER_ID, null, this)
 
+        } else {
+
+            // Remove loading indicator view and show empty view with no internet connection
+            pbLoadingIndicator = pb_loading_indicator
+            pbLoadingIndicator!!.visibility = View.GONE
+
+            tvEmptyView = tv_empty_view
+            tvEmptyView!!.text = "No internet connection"
+            tvEmptyView!!.visibility = View.VISIBLE
+        }
     }
 
 }
