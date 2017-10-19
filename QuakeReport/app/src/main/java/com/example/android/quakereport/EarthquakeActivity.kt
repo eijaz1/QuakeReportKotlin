@@ -15,6 +15,7 @@
  */
 package com.example.android.quakereport
 
+import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -22,6 +23,11 @@ import android.support.v7.widget.RecyclerView
 import java.util.ArrayList
 
 class EarthquakeActivity : AppCompatActivity() {
+
+    private val USGS_REQUEST_URL: String = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmag=3&limit=20"
+
+    /** Adapter for the list of earthquakes  */
+    private val mAdapter: EarthquakeAdapter? = null
 
     //initialize @earthquake_list with type recyclerView
     //iniialize @earthquakes with type ArrayList of Earthquake objects
@@ -32,14 +38,40 @@ class EarthquakeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.earthquake_activity)
 
-        //list of earthquakes pulled from JSON response
-        earthquakes = QueryUtils.extractEarthquakes()
-
         //setting up RecyclerView to recycle earthquake_list_item in
         // rv_earthquake_list for each earthquake
         earthquake_list = findViewById(R.id.rv_earthquake_list) as RecyclerView
         earthquake_list.layoutManager = LinearLayoutManager(this)
         earthquake_list.adapter = EarthquakeAdapter(earthquakes, this)
+
+        // Start the AsyncTask to fetch the earthquake data
+        val task: EarthquakeAsyncTask = EarthquakeAsyncTask()
+        task.execute(USGS_REQUEST_URL)
+
+    }
+
+    inner class EarthquakeAsyncTask : AsyncTask<String, Void, ArrayList<Earthquake>>() {
+
+        override fun doInBackground(vararg urls: String?): ArrayList<Earthquake>? {
+
+            // Don't perform the request if there are no URLs, or the first URL is null.
+            if (urls.size < 1 || urls[0] == null) {
+                return null
+            }
+
+            //list of earthquakes pulled from JSON response
+            earthquakes = QueryUtils.fetchEarthquakeData(USGS_REQUEST_URL) as ArrayList<Earthquake>
+            return earthquakes
+        }
+
+        override fun onPostExecute(earthquakes: ArrayList<Earthquake>?) {
+            //setting up RecyclerView to recycle earthquake_list_item in
+            // rv_earthquake_list for each earthquake
+            earthquake_list = findViewById(R.id.rv_earthquake_list) as RecyclerView
+            earthquake_list.layoutManager = LinearLayoutManager(this@EarthquakeActivity)
+            earthquake_list.adapter = EarthquakeAdapter(earthquakes!!, this@EarthquakeActivity)
+
+        }
 
     }
 
