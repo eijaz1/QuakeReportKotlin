@@ -23,6 +23,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.TextView
 import kotlinx.android.synthetic.main.earthquake_activity.*
 import java.util.ArrayList
@@ -44,8 +45,9 @@ class EarthquakeActivity : AppCompatActivity(), LoaderCallbacks<ArrayList<Earthq
     lateinit var earthquake_list: RecyclerView
     var earthquakes:ArrayList<Earthquake> = ArrayList()
 
-    // Initialize empty text view
+    // Initialize empty text view and progress bar
     lateinit var tvEmptyView: TextView
+    lateinit var pbLoadingIndicator: ProgressBar
 
     override fun onCreateLoader(p0: Int, p1: Bundle?): Loader<ArrayList<Earthquake>> {
 
@@ -54,6 +56,9 @@ class EarthquakeActivity : AppCompatActivity(), LoaderCallbacks<ArrayList<Earthq
     }
 
     override fun onLoadFinished(p0: Loader<ArrayList<Earthquake>>?, earthquakes: ArrayList<Earthquake>?) {
+
+        pbLoadingIndicator = pb_loading_indicator
+        pbLoadingIndicator.visibility = View.GONE
 
         if (earthquakes !=null && !earthquakes.isEmpty()) {
 
@@ -64,7 +69,7 @@ class EarthquakeActivity : AppCompatActivity(), LoaderCallbacks<ArrayList<Earthq
             earthquake_list.adapter = EarthquakeAdapter(earthquakes, this@EarthquakeActivity)
 
         } else {
-            
+
             // Set empty state text to display "No earthquakes found."
             tvEmptyView.text = "No earthquakes found"
             tvEmptyView.visibility = View.VISIBLE
